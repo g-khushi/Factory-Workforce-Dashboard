@@ -22,9 +22,9 @@ import queries
 # ── config ─────────────────────────────────────────────────────────────────────
 load_dotenv()
 
-NEO4J_URI      = os.getenv("NEO4J_URI",      "bolt://localhost:7687")
-NEO4J_USER     = os.getenv("NEO4J_USER",     "neo4j")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "password")
+NEO4J_URI      = st.secrets.get("NEO4J_URI",      os.getenv("NEO4J_URI",      "bolt://localhost:7687"))
+NEO4J_USER     = st.secrets.get("NEO4J_USER",     os.getenv("NEO4J_USER",     "neo4j"))
+NEO4J_PASSWORD = st.secrets.get("NEO4J_PASSWORD", os.getenv("NEO4J_PASSWORD", "password"))
 
 st.set_page_config(
     page_title="Factory Dashboard",
@@ -98,7 +98,7 @@ if page == PAGES[0]:
         else:
             return "background-color:#d6ffd6"
 
-    styled = display.style.applymap(style_variance, subset=["Variance %"]) \
+    styled = display.style.map(style_variance, subset=["Variance %"]) \
                           .format({"Planned h": "{:.1f}", "Actual h": "{:.1f}",
                                    "Variance %": "{:+.1f}%"})
     st.dataframe(styled, use_container_width=True, hide_index=True)
@@ -273,7 +273,7 @@ elif page == PAGES[2]:
         return "color: #c00; font-weight:bold" if val < 0 else "color: #2a9d2a"
 
     st.dataframe(
-        display.style.applymap(colour_deficit, subset=["Deficit"]),
+        display.style.map(colour_deficit, subset=["Deficit"]),
         use_container_width=True, hide_index=True
     )
 
@@ -351,7 +351,7 @@ elif page == PAGES[3]:
         st.subheader("⚠️ Single-Point-of-Failure Stations")
         spof_df = pd.DataFrame(spof_rows)[["station_code","station_name","sole_worker"]]
         spof_df.columns = ["Code","Station","Sole Worker"]
-        st.dataframe(spof_df.style.applymap(lambda _: "background:#fff3cd"),
+        st.dataframe(spof_df.style.map(lambda _: "background:#fff3cd"),
                      use_container_width=True, hide_index=True)
     else:
         st.success("✅ No single-point-of-failure stations found.")
