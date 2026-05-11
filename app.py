@@ -45,14 +45,14 @@ driver = get_driver()
 # ── sidebar navigation ─────────────────────────────────────────────────────────
 
 PAGES = [
-    "🏗️  Project Overview",
-    "⚙️  Station Load",
-    "📊  Capacity Tracker",
-    "👷  Worker Coverage",
-    "✅  Self-Test",
+    "Project Overview",
+    "Station Load",
+    "Capacity Tracker",
+    "Worker Coverage",
+    "Self-Test",
 ]
 
-st.sidebar.title("🏭 Factory Dashboard")
+st.sidebar.title("Factory Dashboard")
 st.sidebar.caption("Swedish Steel Fabrication")
 page = st.sidebar.radio("Navigation", PAGES, label_visibility="collapsed")
 st.sidebar.divider()
@@ -64,7 +64,7 @@ st.sidebar.caption(f"Neo4j: `{NEO4J_URI}`")
 # ══════════════════════════════════════════════════════════════════════════════
 
 if page == PAGES[0]:
-    st.title("🏗️ Project Overview")
+    st.title("Project Overview")
     st.caption("All 8 projects — total planned vs actual hours and variance")
 
     rows = queries.get_all_projects(driver)
@@ -132,7 +132,7 @@ if page == PAGES[0]:
 # ══════════════════════════════════════════════════════════════════════════════
 
 elif page == PAGES[1]:
-    st.title("⚙️ Station Load")
+    st.title("Station Load")
     st.caption("Hours per station across weeks — red bars indicate actual > planned")
 
     load_rows = queries.get_station_load(driver)
@@ -174,7 +174,7 @@ elif page == PAGES[1]:
     st.divider()
 
     # Overloaded table
-    st.subheader("⚠️ Overloaded Station-Weeks (Actual > Planned)")
+    st.subheader("Overloaded Station-Weeks (Actual > Planned)")
     overloaded = df[df["overloaded"] == True][
         ["station_code","station_name","week","planned_hours","actual_hours"]].copy()
     overloaded["excess_h"] = overloaded["actual_hours"] - overloaded["planned_hours"]
@@ -202,7 +202,7 @@ elif page == PAGES[1]:
 # ══════════════════════════════════════════════════════════════════════════════
 
 elif page == PAGES[2]:
-    st.title("📊 Capacity Tracker")
+    st.title(" Capacity Tracker")
     st.caption("Weekly workforce capacity vs planned demand — deficit weeks highlighted in red")
 
     cap_rows = queries.get_weekly_capacity(driver)
@@ -283,7 +283,7 @@ elif page == PAGES[2]:
 # ══════════════════════════════════════════════════════════════════════════════
 
 elif page == PAGES[3]:
-    st.title("👷 Worker Coverage")
+    st.title(" Worker Coverage")
     st.caption("Which workers can cover which stations — single-point-of-failure stations highlighted")
 
     cov_rows = queries.get_worker_coverage_matrix(driver)
@@ -304,7 +304,7 @@ elif page == PAGES[3]:
     c1, c2, c3 = st.columns(3)
     c1.metric("Total Workers", len(workers_df))
     c2.metric("Total Stations", cov_df["station_code"].nunique())
-    c3.metric("⚠️ Single-Point-of-Failure Stations", spof_count,
+    c3.metric(" Single-Point-of-Failure Stations", spof_count,
               delta="risk" if spof_count else "none", delta_color="inverse")
 
     st.divider()
@@ -348,13 +348,13 @@ elif page == PAGES[3]:
 
     # SPOF detail
     if spof_rows:
-        st.subheader("⚠️ Single-Point-of-Failure Stations")
+        st.subheader("Single-Point-of-Failure Stations")
         spof_df = pd.DataFrame(spof_rows)[["station_code","station_name","sole_worker"]]
         spof_df.columns = ["Code","Station","Sole Worker"]
         st.dataframe(spof_df.style.applymap(lambda _: "background:#fff3cd"),
                      use_container_width=True, hide_index=True)
     else:
-        st.success("✅ No single-point-of-failure stations found.")
+        st.success("No single-point-of-failure stations found.")
 
     st.divider()
 
